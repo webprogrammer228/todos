@@ -5,36 +5,41 @@ import { v4 as uuidv4 } from "uuid";
 import TodoItem from "../TodoItem";
 import TodosFilters from "../TodosFilters";
 import { ITodos } from "../../interface";
-import { todosCategory } from "../../constants";
+import { TodosCategory } from "../../constants";
 
 function CustomList() {
   const [todos, setTodos] = React.useState<ITodos[]>([]);
   const [collapse, setCollapse] = React.useState<boolean>(false);
   const [inputValue, setInputValue] = React.useState<string>("");
   const [currentCategoryTodo, setCurrentCategoryTodo] = React.useState<string>(
-    todosCategory[0],
+    TodosCategory.all,
   );
 
   const handleCollapse = () => setCollapse(!collapse);
-  const handleCheckbox = (id: string) => {
+  const toggleCheckbox = (id: string) => {
     setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo,
       ),
     );
   };
-  const handleInput = (e: ChangeEvent<HTMLInputElement>) =>
+  const handleInputСhange = (e: ChangeEvent<HTMLInputElement>) =>
     setInputValue(e.target.value);
   const handleTodoCreate = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && inputValue.trim().length > 0) {
       setTodos([
         ...todos,
-        { id: uuidv4(), todo: inputValue, completed: false },
+        {
+          id: uuidv4(),
+          todo: inputValue,
+          completed: false,
+          category: TodosCategory.all,
+        },
       ]);
       setInputValue("");
     }
   };
-  const changeTodosCategory = (category: string) =>
+  const changeTodoCategory = (category: string) =>
     setCurrentCategoryTodo(category);
   const handleClearComplete = () =>
     setTodos(todos.filter((todo) => !todo.completed));
@@ -53,7 +58,7 @@ function CustomList() {
         </button>
         <input
           value={inputValue}
-          onChange={handleInput}
+          onChange={handleInputСhange}
           onKeyDown={handleTodoCreate}
           className="list-wrapper__todo-field"
           type="text"
@@ -70,15 +75,17 @@ function CustomList() {
         <>
           {todos.map((todo) => {
             if (
-              currentCategoryTodo === todosCategory[0] ||
-              (currentCategoryTodo === todosCategory[1] && !todo.completed) ||
-              (currentCategoryTodo === todosCategory[2] && todo.completed)
+              currentCategoryTodo === TodosCategory.all ||
+              (currentCategoryTodo === TodosCategory.active &&
+                !todo.completed) ||
+              (currentCategoryTodo === TodosCategory.completed &&
+                todo.completed)
             ) {
               return (
                 <TodoItem
                   key={todo.id}
                   todo={todo}
-                  handleCheckbox={handleCheckbox}
+                  toggleCheckbox={toggleCheckbox}
                 />
               );
             }
@@ -87,7 +94,7 @@ function CustomList() {
         </>
         <TodosFilters
           currentCategoryTodo={currentCategoryTodo}
-          changeTodosCategory={changeTodosCategory}
+          changeTodoCategory={changeTodoCategory}
           todos={todos}
           clearTodos={handleClearComplete}
         />

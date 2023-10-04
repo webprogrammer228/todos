@@ -2,10 +2,10 @@ import { ITodos } from "../../interface";
 
 function TodoItem({
   todo,
-  handleCheckbox,
+  toggleCheckbox,
 }: {
   todo: ITodos;
-  handleCheckbox: (id: string) => void;
+  toggleCheckbox: (id: string) => void;
 }) {
   return (
     <div className="collapse-items__collapse-item" key={todo.id}>
@@ -13,7 +13,7 @@ function TodoItem({
         <input
           type="checkbox"
           checked={todo.completed}
-          onChange={() => handleCheckbox(todo.id)}
+          onChange={() => toggleCheckbox(todo.id)}
         />
       </div>
       <span
